@@ -1,6 +1,7 @@
 from django.db.models import Q
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from rest_framework.serializers import UniqueTogetherValidator
+from rest_framework import serializers
 
 from task_tracker.models import Employee, Task
 from task_tracker.validators import TitleValidator
@@ -38,6 +39,14 @@ class TaskSerializer(ModelSerializer):
     def get_term_days(self, task):
         if task.end_date and task.start_date:
             return (task.end_date - task.start_date).days
+
+    def validate(self, data):
+        """
+        Check that the start_date is not after the end_date.
+        """
+        if data['start_date'] > data['end_date']:
+            raise serializers.ValidationError("Дата начала не может быть позже даты окончания.")
+        return data
 
     class Meta:
         model = Task

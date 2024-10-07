@@ -15,6 +15,7 @@ from task_tracker.serializers import (
     ImportantTaskSerializer,
     EmployeeActiveTasksSerializer,
 )
+from task_tracker.custom_pagination import CustomPagination
 
 
 class TaskCreateAPIView(CreateAPIView):
@@ -22,27 +23,26 @@ class TaskCreateAPIView(CreateAPIView):
     serializer_class = TaskSerializer
 
     def perform_create(self, serializer):
-        task = serializer.save()
-        task.owner = self.request.user
-        task.save()
+        # Назначаем владельца задачи
+        serializer.save(owner=self.request.user)
 
 
 class TaskListAPIView(ListAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
+    pagination_class = CustomPagination
 
 
 class ImportantTaskListAPIView(ListAPIView):
-    queryset = Task.objects.all()
     serializer_class = ImportantTaskSerializer
 
     def get_queryset(self):
-        self.queryset = Task.objects.filter(
-            Q(status=Task.STATUS_NOT_STARTED),
-            Q(is_important=True),
-            Q(parent_task__status=Task.STATUS_IN_PROGRESS),
+        # Фильтрация по статусу, важности и статусу родительской задачи
+        return Task.objects.filter(
+            status=Task.STATUS_NOT_STARTED,
+            is_important=True,
+            parent_task__status=Task.STATUS_IN_PROGRESS,
         )
-        return self.queryset
 
 
 class TaskRetrieveAPIView(RetrieveAPIView):
@@ -71,18 +71,13 @@ class EmployeeListAPIView(ListAPIView):
 
 
 class EmployeeActiveTasksListAPIView(ListAPIView):
-    queryset = Employee.objects.all()
     serializer_class = EmployeeActiveTasksSerializer
     filter_backends = [SearchFilter]
     search_fields = ["full_name"]
 
     def get_queryset(self):
-        self.queryset = Employee.objects.all()
-        self.queryset = self.queryset.select_related()
-        self.queryset = Employee.objects.annotate(tasks_count=Count("task")).order_by(
-            "-tasks_count"
-        )
-        return self.queryset
+        # Выбираем сотрудников и аннотируем количество задач
+        return Employee.objects.annotate(tasks_count=Count("task")).order_by("-tasks_count")
 
 
 class EmployeeRetrieveAPIView(RetrieveAPIView):
