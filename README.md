@@ -34,37 +34,6 @@ Employee-Task-Tracker — это веб-приложение, предназна
 user = "admin@example.com"
 password ="Password"
 
-
-
-## Команды Docker
-
-Запуск контейнеров в фоновом режиме:
-
-    ```bash
-    docker-compose up -d
-
-Остановка контейнеров:
-
-    ```bash
-    docker-compose down
-
-Перестройка контейнеров и перезапуск:
-
-    ```bash
-    docker-compose up -d --build
-
-Просмотр логов контейнеров:
-
-    ```bash
-    docker-compose logs
-
-
-Остановка всех контейнеров:
-
-    ```bash
-    docker-compose stop
-
-
 ## Employee-Task-Tracker API Documentation
 
 ### Получить список задач сотрудника
