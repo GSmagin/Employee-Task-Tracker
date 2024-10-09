@@ -34,6 +34,9 @@ Employee-Task-Tracker — это веб-приложение, предназна
 user = "admin@example.com"
 password ="Password"
 
+Для lunix систем нужно сделать исполняемый файл  [start.sh](start.sh) chmod +x start.sh в самой системе перед 
+запуском docker-compose
+
 ## Employee-Task-Tracker API Documentation
 
 ### Получить список задач сотрудника
